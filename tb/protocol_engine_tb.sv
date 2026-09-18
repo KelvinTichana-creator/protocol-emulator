@@ -42,12 +42,13 @@ module protocol_engine_tb;
     // Display important signals
     initial begin
         $monitor(
-            "time=%0t rst=%b pc=%0d gpio=%b",
-            $time,
-            rst,
+    	    "time=%0t rst=%b pc=%0d gpio=%b wait=%0d",
+    	    $time,
+    	    rst,
             dut.pc,
-            gpio
-        );
-    end
-
+            gpio,
+            dut.wait_counter
+		
+);
+ end
 endmodule
