@@ -25,7 +25,7 @@ module protocol_engine_tb;
     // Test sequence
     initial begin
 	// Set external input
-    	gpio_in = 8'b10101010;
+    	gpio_in = 8'b00000000;
 
     	// Start in reset
     	rst = 1;
