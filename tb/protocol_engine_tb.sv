@@ -24,6 +24,8 @@ module protocol_engine_tb;
 
     // Test sequence
     initial begin
+    	$dumpfile("protocol_engine.vcd");
+	$dumpvars(0, tb);
 	// Set external input
     	gpio_in = 8'b00000000;
 
@@ -57,15 +59,17 @@ module protocol_engine_tb;
     // Display important signals
     initial begin
         $monitor(
-    	    //"time=%0t rst=%b pc=%0d gpio=%b wait=%0d",
-	    "time=%0t rst=%b pc=%0d gpio=%b wait=%0d input=%b",
-    	    $time,
-    	    rst,
-            dut.pc,
-            gpio,
-            dut.wait_counter,
-	    dut.input_reg
-		
-);
+    		"time=%0t rst=%b pc=%0d gpio=%b wait=%0d input=%b data=%b bit=%b remaining=%0d empty=%b",
+    		$time,
+    		rst,
+    		dut.pc,
+    		gpio,
+    		dut.wait_counter,
+    		dut.input_reg,
+    		dut.data_reg,
+    		dut.data_bit,
+    		dut.bits_remaining,
+    		dut.data_empty
+               );
  end
 endmodule
