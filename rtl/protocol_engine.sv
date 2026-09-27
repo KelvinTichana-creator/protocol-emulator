@@ -39,6 +39,7 @@ module protocol_engine (
     localparam logic [3:0] OP_SHIFT_TX  = 4'b1001;
     localparam logic [3:0] OP_LOAD_DATA = 4'b1010;
     localparam logic [3:0] OP_WRITE_BIT = 4'b1011;
+    localparam logic [3:0] OP_SHIFT_WRITE = 4'b1100;
     // Decode current instruction
     assign opcode  = program_memory[pc][15:12];
     assign operand = program_memory[pc][7:0];
@@ -55,13 +56,23 @@ module protocol_engine (
         //program_memory[7] = {OP_SHIFT_TX,  4'b0000, 8'h00};
         //program_memory[8] = {OP_SHIFT_TX,  4'b0000, 8'h00};
         //program_memory[9] = {OP_HALT,     4'b0000, 8'h00};
+	//program_memory[0] = {OP_LOAD_DATA,  4'b0000, 8'b10110010};
+	//program_memory[1] = {OP_SHIFT_TX,   4'b0000, 8'h00};
+	//program_memory[2] = {OP_WRITE_BIT,  4'b0000, 8'b00000001};
+	//program_memory[3] = {OP_SHIFT_TX,   4'b0000, 8'h00};
+	//program_memory[4] = {OP_WRITE_BIT,  4'b0000, 8'b00000001};
+	//program_memory[5] = {OP_HALT,       4'b0000, 8'h00};
 	program_memory[0] = {OP_LOAD_DATA,  4'b0000, 8'b10110010};
-	program_memory[1] = {OP_SHIFT_TX,   4'b0000, 8'h00};
-	program_memory[2] = {OP_WRITE_BIT,  4'b0000, 8'b00000001};
-	program_memory[3] = {OP_SHIFT_TX,   4'b0000, 8'h00};
-	program_memory[4] = {OP_WRITE_BIT,  4'b0000, 8'b00000001};
-	program_memory[5] = {OP_HALT,       4'b0000, 8'h00};
-        //program_memory[0] = {OP_TEST, 4'b0000, 8'b00000001};
+	program_memory[1] = {OP_SHIFT_WRITE, 4'b0000, 8'b00000001};
+	program_memory[2] = {OP_SHIFT_WRITE, 4'b0000, 8'b00000001};
+        program_memory[3] = {OP_SHIFT_WRITE, 4'b0000, 8'b00000001};
+	program_memory[4] = {OP_SHIFT_WRITE, 4'b0000, 8'b00000001};
+	program_memory[5] = {OP_SHIFT_WRITE, 4'b0000, 8'b00000001};
+	program_memory[6] = {OP_SHIFT_WRITE, 4'b0000, 8'b00000001};
+	program_memory[7] = {OP_SHIFT_WRITE, 4'b0000, 8'b00000001};
+	program_memory[8] = {OP_SHIFT_WRITE, 4'b0000, 8'b00000001};
+	//program_memory[7] = {OP_SHIFT_WRITE, 4'b0000, 8'b00000001};
+	//program_memory[0] = {OP_TEST, 4'b0000, 8'b00000001};
 	//program_memory[1] = {OP_JNZ, 4'b0000, 8'h03};
     	//program_memory[0] = {OP_READ, 4'b0000, 8'h00};
     	//program_memory[1] = {OP_JNZ,  4'b0000, 8'h03};
@@ -170,6 +181,27 @@ module protocol_engine (
                        gpio <= gpio & ~operand;
 
                    pc <= pc + 1;
+                end
+		OP_SHIFT_WRITE: begin
+                   if (!data_empty) begin
+                       data_bit <= data_reg[7];
+                       data_reg <= data_reg << 1;
+
+                       if (bits_remaining == 4'd1) begin
+                           bits_remaining <= 4'd0;
+                           data_empty <= 1'b1;
+                       end
+                       else begin
+                           bits_remaining <= bits_remaining - 1;
+                       end
+
+                       if (data_reg[7])
+                           gpio <= gpio | operand;
+                       else
+                           gpio <= gpio & ~operand;
+
+                      pc <= pc + 1;
+                   end
                 end
                 default: begin
                     pc <= pc + 1;

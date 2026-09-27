@@ -24,8 +24,8 @@ module protocol_engine_tb;
 
     // Test sequence
     initial begin
-    	$dumpfile("protocol_engine.vcd");
-	$dumpvars(0, tb);
+    	//$dumpfile("protocol_engine.vcd");
+	//$dumpvars(0, tb);
 	// Set external input
     	gpio_in = 8'b00000000;
 
