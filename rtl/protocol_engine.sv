@@ -46,6 +46,11 @@ module protocol_engine (
 
     // Program
     initial begin
+    	//program_memory[0] = {OP_LOAD_DATA,   4'b0000, 8'b10110010};
+	//program_memory[1] = {OP_SHIFT_WRITE, 4'b0000, 8'b00000101};
+	//program_memory[2] = {OP_SHIFT_WRITE, 4'b0000, 8'b00000101};
+	//program_memory[2] = {OP_SHIFT_WRITE, 4'b0000, 8'b00000101};
+	//program_memory[3] = {OP_HALT,       4'b0000, 8'h00};
         //program_memory[0] = {OP_LOAD_DATA, 4'b0000, 8'b10110010};
         //program_memory[1] = {OP_SHIFT_TX,  4'b0000, 8'h00};
         //program_memory[2] = {OP_SHIFT_TX,  4'b0000, 8'h00};
@@ -62,15 +67,15 @@ module protocol_engine (
 	//program_memory[3] = {OP_SHIFT_TX,   4'b0000, 8'h00};
 	//program_memory[4] = {OP_WRITE_BIT,  4'b0000, 8'b00000001};
 	//program_memory[5] = {OP_HALT,       4'b0000, 8'h00};
-	program_memory[0] = {OP_LOAD_DATA,  4'b0000, 8'b10110010};
-	program_memory[1] = {OP_SHIFT_WRITE, 4'b0000, 8'b00000001};
-	program_memory[2] = {OP_SHIFT_WRITE, 4'b0000, 8'b00000001};
-        program_memory[3] = {OP_SHIFT_WRITE, 4'b0000, 8'b00000001};
-	program_memory[4] = {OP_SHIFT_WRITE, 4'b0000, 8'b00000001};
-	program_memory[5] = {OP_SHIFT_WRITE, 4'b0000, 8'b00000001};
-	program_memory[6] = {OP_SHIFT_WRITE, 4'b0000, 8'b00000001};
-	program_memory[7] = {OP_SHIFT_WRITE, 4'b0000, 8'b00000001};
-	program_memory[8] = {OP_SHIFT_WRITE, 4'b0000, 8'b00000001};
+	//program_memory[0] = {OP_LOAD_DATA,  4'b0000, 8'b10110010};
+	//program_memory[1] = {OP_SHIFT_WRITE, 4'b0000, 8'b00000001};
+	//program_memory[2] = {OP_SHIFT_WRITE, 4'b0000, 8'b00000001};
+        //program_memory[3] = {OP_SHIFT_WRITE, 4'b0000, 8'b00000001};
+	//program_memory[4] = {OP_SHIFT_WRITE, 4'b0000, 8'b00000001};
+	//program_memory[5] = {OP_SHIFT_WRITE, 4'b0000, 8'b00000001};
+	//program_memory[6] = {OP_SHIFT_WRITE, 4'b0000, 8'b00000001};
+	//program_memory[7] = {OP_SHIFT_WRITE, 4'b0000, 8'b00000001};
+	//program_memory[8] = {OP_SHIFT_WRITE, 4'b0000, 8'b00000001};
 	//program_memory[7] = {OP_SHIFT_WRITE, 4'b0000, 8'b00000001};
 	//program_memory[0] = {OP_TEST, 4'b0000, 8'b00000001};
 	//program_memory[1] = {OP_JNZ, 4'b0000, 8'h03};
@@ -84,11 +89,29 @@ module protocol_engine (
     	//program_memory[0] = {OP_SET,  4'b0000, 8'h01};
 	//program_memory[1] = {OP_WAIT, 4'b0000, 8'h05};
 	//program_memory[2] = {OP_CLR,  4'b0000, 8'h01};
-	//program_memory[3] = {OP_JMP,  4'b0000, 8'h00};
-        //program_memory[0] = {OP_SET, 4'b0000, 8'h01};
-        //program_memory[1] = {OP_NOP, 4'b0000, 8'h00};
-        //program_memory[2] = {OP_CLR, 4'b0000, 8'h01};
-        //program_memory[3] = {OP_JMP, 4'b0000, 8'h00};
+	program_memory[0] = {OP_LOAD_DATA,   4'b0000, 8'b01001101};
+	program_memory[1] = {OP_SET,  4'b0000, 8'h01};
+	program_memory[2] = {OP_CLR,  4'b0000, 8'h01};
+	program_memory[3] = {OP_WAIT, 4'b0000, 8'h04};
+	program_memory[4] = {OP_SHIFT_WRITE, 4'b0000, 8'b00000001};
+	program_memory[5] = {OP_WAIT, 4'b0000, 8'h04};
+	program_memory[6] = {OP_SHIFT_WRITE, 4'b0000, 8'b00000001};
+	program_memory[7] = {OP_WAIT, 4'b0000, 8'h04};
+	program_memory[8] = {OP_SHIFT_WRITE, 4'b0000, 8'b00000001};
+ 	program_memory[9] = {OP_WAIT, 4'b0000, 8'h04};
+	program_memory[10] = {OP_SHIFT_WRITE, 4'b0000, 8'b00000001};
+	program_memory[11] = {OP_WAIT, 4'b0000, 8'h04};
+	program_memory[12] = {OP_SHIFT_WRITE, 4'b0000, 8'b00000001};
+	program_memory[13] = {OP_WAIT, 4'b0000, 8'h04};
+	program_memory[14] = {OP_SHIFT_WRITE, 4'b0000, 8'b00000001};
+	program_memory[15] = {OP_WAIT, 4'b0000, 8'h04};
+	program_memory[16] = {OP_SHIFT_WRITE, 4'b0000, 8'b00000001};
+	program_memory[17] = {OP_WAIT, 4'b0000, 8'h04};
+	program_memory[18] = {OP_SHIFT_WRITE, 4'b0000, 8'b00000001};
+	program_memory[19] = {OP_WAIT, 4'b0000, 8'h04};
+	program_memory[20] = {OP_SET,  4'b0000, 8'h01}; // Stop bit
+	program_memory[21] = {OP_WAIT, 4'b0000, 8'h04};
+	program_memory[22] = {OP_HALT, 4'b0000, 8'h00};
     end
 
     // Processor

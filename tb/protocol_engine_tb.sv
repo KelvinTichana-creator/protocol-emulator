@@ -37,7 +37,7 @@ module protocol_engine_tb;
     	rst = 0;
 
     	// Run the processor
-    	#100;
+    	#1000;
 
     	// End simulation
         // Start in reset
