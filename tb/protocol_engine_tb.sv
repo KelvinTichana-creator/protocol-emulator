@@ -59,7 +59,7 @@ module protocol_engine_tb;
     // Display important signals
     initial begin
         $monitor(
-    		"time=%0t rst=%b pc=%0d gpio=%b wait=%0d input=%b data=%b bit=%b remaining=%0d empty=%b",
+    		"time=%0t rst=%b pc=%0d gpio=%b wait=%0d input=%b data=%b bit=%b remaining=%0d empty=%b waiting=%b",
     		$time,
     		rst,
     		dut.pc,
@@ -69,7 +69,8 @@ module protocol_engine_tb;
     		dut.data_reg,
     		dut.data_bit,
     		dut.bits_remaining,
-    		dut.data_empty
+    		dut.data_empty,
+		dut.waiting
                );
  end
 endmodule
