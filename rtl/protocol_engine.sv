@@ -9,7 +9,7 @@ module protocol_engine (
     logic       waiting;
     logic [7:0] wait_counter;
     logic [7:0] input_reg;
-
+    logic [7:0] loop_count;
     logic [7:0] data_reg;
     logic       data_empty;
     logic       data_bit;
@@ -32,12 +32,17 @@ module protocol_engine (
     localparam logic [3:0] OP_LOAD_DATA   = 4'b1010;
     localparam logic [3:0] OP_WRITE_BIT   = 4'b1011;
     localparam logic [3:0] OP_SHIFT_WRITE = 4'b1100;
+    localparam logic [3:0] OP_LOOP_SET   = 4'b1101;
+    localparam logic [3:0] OP_LOOP_BEGIN = 4'b1110;
+    localparam logic [3:0] OP_LOOP_END   = 4'b1111;
+
 
     assign opcode  = program_memory[pc][15:12];
     assign operand = program_memory[pc][7:0];
 
     // UART TX demo: send 0xB2 LSB-first using reversed data.
     initial begin
+    	/*
         program_memory[0]  = {OP_LOAD_DATA,   4'b0000, 8'b01001101};
         program_memory[1]  = {OP_SET,         4'b0000, 8'h01};
         program_memory[2]  = {OP_CLR,         4'b0000, 8'h01};
@@ -70,6 +75,56 @@ module protocol_engine (
         program_memory[20] = {OP_SET,         4'b0000, 8'h01};
         program_memory[21] = {OP_WAIT,        4'b0000, 8'h04};
         program_memory[22] = {OP_HALT,        4'b0000, 8'h00};
+	
+    	program_memory[0] = {OP_LOOP_SET, 4'b0000, 8'd3};
+	program_memory[1] = {OP_SET,      4'b0000, 8'h01};
+	program_memory[2] = {OP_CLR,      4'b0000, 8'h01};
+	program_memory[3] = {OP_LOOP,     4'b0000, 8'd1};
+	program_memory[4] = {OP_HALT,     4'b0000, 8'h00};
+	
+    	program_memory[0] = {OP_LOOP_SET,   4'b0000, 8'd1};
+	program_memory[1] = {OP_LOOP_BEGIN, 4'b0000, 8'd5};
+	program_memory[2] = {OP_SET,        4'b0000, 8'h01};
+	program_memory[3] = {OP_CLR,        4'b0000, 8'h01};
+	program_memory[4] = {OP_LOOP_END,   4'b0000, 8'd2};
+	program_memory[5] = {OP_HALT,       4'b0000, 8'h00};
+	*/
+    	program_memory[0]  = {OP_LOOP_SET,    4'b0000, 8'd3};
+	program_memory[1]  = {OP_LOOP_BEGIN,  4'b0000, 8'd25};
+
+	program_memory[2]  = {OP_LOAD_DATA,   4'b0000, 8'h4D};
+	program_memory[3]  = {OP_SET,         4'b0000, 8'h01};
+	program_memory[4]  = {OP_CLR,         4'b0000, 8'h01};
+	program_memory[5]  = {OP_WAIT,        4'b0000, 8'd4};
+
+	program_memory[6]  = {OP_SHIFT_WRITE, 4'b0000, 8'h01};
+	program_memory[7]  = {OP_WAIT,        4'b0000, 8'd4};
+	program_memory[8]  = {OP_SHIFT_WRITE, 4'b0000, 8'h01};
+	program_memory[9]  = {OP_WAIT,        4'b0000, 8'd4};
+	program_memory[10] = {OP_SHIFT_WRITE, 4'b0000, 8'h01};
+	program_memory[11] = {OP_WAIT,        4'b0000, 8'd4};
+	program_memory[12] = {OP_SHIFT_WRITE, 4'b0000, 8'h01};
+	program_memory[13] = {OP_WAIT,        4'b0000, 8'd4};
+	program_memory[14] = {OP_SHIFT_WRITE, 4'b0000, 8'h01};
+	program_memory[15] = {OP_WAIT,        4'b0000, 8'd4};
+	program_memory[16] = {OP_SHIFT_WRITE, 4'b0000, 8'h01};
+	program_memory[17] = {OP_WAIT,        4'b0000, 8'd4};
+	program_memory[18] = {OP_SHIFT_WRITE, 4'b0000, 8'h01};
+	program_memory[19] = {OP_WAIT,        4'b0000, 8'd4};
+	/*
+	program_memory[20] = {OP_SHIFT_WRITE, 4'b0000, 8'h01};
+
+	program_memory[21] = {OP_SET,         4'b0000, 8'h01};
+	program_memory[22] = {OP_WAIT,        4'b0000, 8'd4};
+	program_memory[23] = {OP_LOOP_END,    4'b0000, 8'd2};
+	program_memory[24] = {OP_HALT,        4'b0000, 8'h00}
+	*/
+	program_memory[20] = {OP_SHIFT_WRITE, 4'b0000, 8'h01};
+	program_memory[21] = {OP_WAIT,        4'b0000, 8'd4};
+	program_memory[22] = {OP_SET,         4'b0000, 8'h01};
+	program_memory[23] = {OP_WAIT,        4'b0000, 8'd4};
+	program_memory[24] = {OP_LOOP_END,    4'b0000, 8'd2};
+	program_memory[25] = {OP_HALT,        4'b0000, 8'h00};
     end
 
     always_ff @(posedge clk) begin
@@ -83,6 +138,7 @@ module protocol_engine (
             data_empty     <= 1'b1;
             data_bit       <= 1'b0;
             bits_remaining <= 4'd0;
+	    loop_count <= 8'd0;
         end
         else if (waiting && (wait_counter > 8'd1)) begin
             // A full waiting interval elapses on this edge.
@@ -206,7 +262,42 @@ module protocol_engine (
                         pc <= pc + 1'b1;
                     end
                 end
+		
+		OP_LOOP_SET: begin
+                    loop_count <= operand;
+                    pc         <= pc + 1'b1;
+                end
+		/*
+		OP_LOOP: begin
+                   if (loop_count > 8'd1) begin
+        		loop_count <= loop_count - 1'b1;
+        		pc         <= operand;
+    		   end
+    		   else begin
+        		loop_count <= 8'd0;
+        		pc         <= pc + 1'b1;
+    		   end
+	        end
+		*/
+		OP_LOOP_BEGIN: begin
+    		   if (loop_count == 8'd0) begin
+        		pc <= operand;
+    		   end
+    		   else begin
+        		pc <= pc + 1'b1;
+    		   end
+		end
 
+		OP_LOOP_END: begin
+    		  if (loop_count > 8'd1) begin
+        		loop_count <= loop_count - 1'b1;
+        		pc         <= operand;
+    		  end
+    		  else begin
+        		loop_count <= 8'd0;
+        		pc         <= pc + 1'b1;
+    		  end
+		end
                 default: begin
                     pc <= pc + 1'b1;
                 end
