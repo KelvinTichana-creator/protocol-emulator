@@ -19,7 +19,8 @@ module protocol_engine (
     logic [3:0] opcode;
     logic [7:0] operand;
 
-    localparam logic [3:0] OP_NOP         = 4'b0000;
+    //localparam logic [3:0] OP_NOP         = 4'b0000;
+    localparam logic [3:0] OP_WAIT_UNTIL = 4'b0000;
     localparam logic [3:0] OP_SET         = 4'b0001;
     localparam logic [3:0] OP_CLR         = 4'b0010;
     localparam logic [3:0] OP_WAIT        = 4'b0011;
@@ -89,7 +90,7 @@ module protocol_engine (
 	program_memory[4] = {OP_LOOP_END,   4'b0000, 8'd2};
 	program_memory[5] = {OP_HALT,       4'b0000, 8'h00};
 	*/
-    	program_memory[0]  = {OP_LOOP_SET,    4'b0000, 8'd3};
+    	program_memory[0]  = {OP_LOOP_SET,    4'b0000, 8'd5};
 	program_memory[1]  = {OP_LOOP_BEGIN,  4'b0000, 8'd25};
 
 	program_memory[2]  = {OP_LOAD_DATA,   4'b0000, 8'h4D};
@@ -153,9 +154,18 @@ module protocol_engine (
             end
 
             case (opcode)
-                OP_NOP: begin
-                    pc <= pc + 1'b1;
-                end
+                OP_WAIT_UNTIL: begin
+    		    // Operand[2:0] selects GPIO input pin 0-7.
+    		    // Operand[3] specifies the required input level.
+    		    // Hold the current instruction until the input matches.
+
+    		    if (gpio_in[operand[2:0]] == operand[3]) begin
+        		pc <= pc + 1'b1;
+    			end
+    		    else begin
+        		pc <= pc;
+    		    end
+		end
 
                 OP_SET: begin
                     gpio <= gpio | operand;
